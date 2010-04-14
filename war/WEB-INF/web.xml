@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://java.sun.com/xml/ns/javaee" xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
+http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+	version="2.5">
+
+	<filter>
+		<filter-name>OAuthValidateFilter</filter-name>
+		<filter-class>name.kghost.oauth.filter.OAuthValidateFilter</filter-class>
+		<init-param>
+			<param-name>token</param-name>
+			<param-value>i1yxg2pFEnJSJ7cihtLUzQ</param-value>
+		</init-param>
+		<init-param>
+			<param-name>secret</param-name>
+			<param-value>KHA4tKlHYtuO5j02k0HV4AceObdTiVitH9UMuqkuF24</param-value>
+		</init-param>
+	</filter>
+
+	<filter>
+		<filter-name>OAuthProxyFilter</filter-name>
+		<filter-class>name.kghost.oauth.filter.OAuthProxyFilter</filter-class>
+		<init-param>
+			<param-name>schema</param-name>
+			<param-value>http</param-value>
+		</init-param>
+		<init-param>
+			<param-name>host</param-name>
+			<param-value>api.twitter.com</param-value>
+		</init-param>
+		<init-param>
+			<param-name>port</param-name>
+			<param-value>80</param-value>
+		</init-param>
+	</filter>
+
+	<filter>
+		<filter-name>OAuthSignFilter</filter-name>
+		<filter-class>name.kghost.oauth.filter.OAuthSignFilter</filter-class>
+		<init-param>
+			<param-name>token</param-name>
+			<param-value>i1yxg2pFEnJSJ7cihtLUzQ</param-value>
+		</init-param>
+		<init-param>
+			<param-name>secret</param-name>
+			<param-value>KHA4tKlHYtuO5j02k0HV4AceObdTiVitH9UMuqkuF24</param-value>
+		</init-param>
+	</filter>
+
+	<filter>
+		<filter-name>OAuthTokenRequestFilter</filter-name>
+		<filter-class>name.kghost.oauth.filter.OAuthTokenRequestFilter</filter-class>
+	</filter>
+
+	<servlet>
+		<servlet-name>Redirect</servlet-name>
+		<servlet-class>name.kghost.oauth.servlet.HttpRedirect</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>Proxy</servlet-name>
+		<servlet-class>name.kghost.oauth.servlet.HttpProxy</servlet-class>
+	</servlet>
+
+	<filter-mapping>
+		<filter-name>OAuthValidateFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	<filter-mapping>
+		<filter-name>OAuthProxyFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	<filter-mapping>
+		<filter-name>OAuthTokenRequestFilter</filter-name>
+		<url-pattern>/oauth/request_token</url-pattern>
+		<url-pattern>/oauth/access_token</url-pattern>
+	</filter-mapping>
+	<filter-mapping>
+		<filter-name>OAuthSignFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+
+	<servlet-mapping>
+		<servlet-name>Redirect</servlet-name>
+		<url-pattern>/oauth/authorize</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>Proxy</servlet-name>
+		<url-pattern>/*</url-pattern>
+	</servlet-mapping>
+</web-app>
