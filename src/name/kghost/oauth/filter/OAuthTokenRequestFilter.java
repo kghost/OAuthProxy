@@ -15,6 +15,9 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import name.kghost.oauth.config.OAuthUser;
+import name.kghost.oauth.lib.OAuth;
+
 public class OAuthTokenRequestFilter implements Filter {
 	public void doFilter(ServletRequest sreq, ServletResponse sresp,
 			FilterChain chain) throws IOException, ServletException {
@@ -41,14 +44,12 @@ public class OAuthTokenRequestFilter implements Filter {
 				map.put(name, value);
 			}
 
-			OAuthUser p = new OAuthUser();
-			if (map.containsKey(name.kghost.oauth.lib.OAuth.OAUTH_TOKEN)
-					&& map.containsKey(name.kghost.oauth.lib.OAuth.OAUTH_TOKEN_SECRET)) {
-				p.OAuthToken = map.get(name.kghost.oauth.lib.OAuth.OAUTH_TOKEN);
-				p.OAuthTokenSecret = map
-						.get(name.kghost.oauth.lib.OAuth.OAUTH_TOKEN_SECRET);
+			if (map.containsKey(OAuth.OAUTH_TOKEN)
+					&& map.containsKey(OAuth.OAUTH_TOKEN_SECRET)) {
 				PersistenceManager pm = PMF.get().getPersistenceManager();
 				try {
+					OAuthUser p = new OAuthUser(map.get(OAuth.OAUTH_TOKEN), map
+							.get(OAuth.OAUTH_TOKEN_SECRET));
 					pm.makePersistent(p);
 				} finally {
 					pm.close();

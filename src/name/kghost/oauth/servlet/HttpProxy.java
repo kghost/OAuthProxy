@@ -19,7 +19,7 @@ public class HttpProxy extends HttpServlet {
 		url += HttpUtil.addQuery(req);
 		Map<String, String> hashtable = HttpUtil.getHeaders(req);
 		hashtable.remove("host");
-		hashtable.put("Host", HttpUtil.getHostInfo(host));
+		hashtable.put("Host", (String) req.getAttribute("host"));
 		GetPost getpost = new GetPost();
 		String s3 = getpost.doGet(url, hashtable, resp);
 		if (s3 != null) {
@@ -39,7 +39,7 @@ public class HttpProxy extends HttpServlet {
 		url += HttpUtil.addQuery(req);
 		Map<String, String> headers = HttpUtil.getHeaders(req);
 		headers.remove("host");
-		headers.put("Host", (String) req.getAttribute("fullhost"));
+		headers.put("Host", (String) req.getAttribute("host"));
 		GetPost getpost = new GetPost();
 		String s4 = getpost.doPost(req, url, headers, req.getInputStream(),
 				resp);

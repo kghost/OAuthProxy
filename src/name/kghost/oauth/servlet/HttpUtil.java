@@ -16,8 +16,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpUtils;
 
-import name.kghost.oauth.lib.OAuth;
-
 @SuppressWarnings("deprecation")
 public class HttpUtil {
 	@SuppressWarnings("unchecked")
@@ -31,49 +29,35 @@ public class HttpUtil {
 		return headers;
 	}
 
-	static String getHostInfo(String s) {
-		String s1 = s;
-		int i = s1.indexOf("://");
-		if (i > 0)
-			s1 = s1.substring(i + 3);
-		i = s1.indexOf("/");
-		if (i > 0)
-			s1 = s1.substring(0, i);
-		i = s1.indexOf("?");
-		if (i > 0)
-			s1 = s1.substring(0, i);
-		i = s1.indexOf("#");
-		if (i > 0)
-			s1 = s1.substring(0, i);
-		i = s1.indexOf(";");
-		if (i > 0)
-			s1 = s1.substring(0, i);
-		return s1;
-	}
-
 	@SuppressWarnings( { "unchecked" })
-	static String addQuery(HttpServletRequest req)
-			throws UnsupportedEncodingException {
+	static String addQuery(HttpServletRequest req) {
 		StringBuilder sb = new StringBuilder();
 		String query = req.getQueryString();
 		if (query == null) {
 			return "";
 		} else {
 			Hashtable<String, String[]> ps = HttpUtils.parseQueryString(query);
-			String sig = (String) req
-					.getAttribute(name.kghost.oauth.lib.OAuth.OAUTH_SIGNATURE);
-			if (sig != null)
-				ps.put(name.kghost.oauth.lib.OAuth.OAUTH_SIGNATURE,
-						new String[] { URLEncoder.encode(sig, "UTF-8") });
+			Map<String, String> hs = HttpUtil.getOverwriteParams(req);
 			for (Map.Entry<String, String[]> p : ps.entrySet()) {
-				for (String v : p.getValue())
-					if (sb.length() == 0) {
-						sb.append("?").append(p.getKey()).append("=").append(v);
-					} else {
-						sb.append("&").append(p.getKey()).append("=").append(v);
+				String k = p.getKey();
+				if (hs.containsKey(k)) {
+					String v = hs.get(k);
+					addQueryParam(sb, k, v);
+				} else {
+					for (String v : p.getValue()) {
+						addQueryParam(sb, k, v);
 					}
+				}
 			}
 			return sb.toString();
+		}
+	}
+
+	private static void addQueryParam(StringBuilder sb, String k, String v) {
+		if (sb.length() == 0) {
+			sb.append("?").append(k).append("=").append(v);
+		} else {
+			sb.append("&").append(k).append("=").append(v);
 		}
 	}
 
@@ -112,24 +96,37 @@ public class HttpUtil {
 	static String buildPostData(HttpServletRequest req)
 			throws UnsupportedEncodingException {
 		Map<String, String[]> map = req.getParameterMap();
+		Map<String, String> hs = HttpUtil.getOverwriteParams(req);
 		StringBuilder sb = new StringBuilder();
 		for (Entry<String, String[]> param : map.entrySet()) {
-			if (!param.getKey().equals(OAuth.OAUTH_SIGNATURE)) {
+			String k = param.getKey();
+			if (!hs.containsKey(k)) {
 				for (String v : param.getValue()) {
-					if (sb.length() > 0)
-						sb.append("&");
-					sb.append(param.getKey()).append("=");
-					sb.append(URLEncoder.encode(v, "UTF-8"));
+					String v2 = URLEncoder.encode(v, "UTF-8");
+					addPostParam(sb, k, v2);
 				}
 			} else {
-				if (sb.length() > 0)
-					sb.append("&");
-				sb.append(OAuth.OAUTH_SIGNATURE).append("=").append(
-						URLEncoder.encode((String) req
-								.getAttribute(OAuth.OAUTH_SIGNATURE), "UTF-8"));
+				addPostParam(sb, k, hs.get(k));
 			}
 		}
 		String postdata = sb.toString();
 		return postdata;
+	}
+
+	private static void addPostParam(StringBuilder sb, String k, String v) {
+		if (sb.length() > 0)
+			sb.append("&");
+		sb.append(k).append("=").append(v);
+	}
+
+	@SuppressWarnings("unchecked")
+	public static Map<String, String> getOverwriteParams(HttpServletRequest req) {
+		Map<String, String> headers = (Map<String, String>) req
+				.getAttribute("OverwriteMap");
+		if (headers == null) {
+			headers = new HashMap<String, String>();
+			req.setAttribute("OverwriteMap", headers);
+		}
+		return headers;
 	}
 }

@@ -19,7 +19,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -31,6 +30,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
+import name.kghost.oauth.config.OAuthConsumer;
+import name.kghost.oauth.config.OAuthUser;
 import name.kghost.oauth.lib.signature.OAuthSignatureMethod;
 
 //TODO: move this class into oauth-provider
@@ -66,7 +67,7 @@ public class SimpleOAuthValidator implements OAuthValidator {
 	 * limitation is specified by OAuth Core <a
 	 * href="http://oauth.net/core/1.0#anchor7">section 5</a>.
 	 */
-	public static final Set<String> SINGLE_PARAMETERS = constructSingleParameters();
+	private static final Set<String> SINGLE_PARAMETERS = constructSingleParameters();
 
 	private static Set<String> constructSingleParameters() {
 		Set<String> s = new HashSet<String>();
@@ -146,21 +147,18 @@ public class SimpleOAuthValidator implements OAuthValidator {
 				+ 500);
 	}
 
-	/**
-	 * {@inherit}
-	 * 
-	 * @throws URISyntaxException
-	 */
-	public void validateMessage(OAuthMessage message, OAuthAccessor accessor)
-			throws OAuthException, IOException, URISyntaxException {
+	@Override
+	public void validateMessage(OAuthMessage message, OAuthConsumer consumer,
+			OAuthUser user) throws OAuthException, IOException,
+			URISyntaxException {
 		checkSingleParameters(message);
 		validateVersion(message);
 		validateTimestampAndNonce(message);
-		validateSignature(message, accessor);
+		validateSignature(message, consumer, user);
 	}
 
 	/** Throw an exception if any SINGLE_PARAMETERS occur repeatedly. */
-	protected void checkSingleParameters(OAuthMessage message)
+	private void checkSingleParameters(OAuthMessage message)
 			throws IOException, OAuthException {
 		// Check for repeated oauth_ parameters:
 		boolean repeated = false;
@@ -170,7 +168,7 @@ public class SimpleOAuthValidator implements OAuthValidator {
 			if (SINGLE_PARAMETERS.contains(name)) {
 				Collection<String> values = nameToValues.get(name);
 				if (values == null) {
-					values = new ArrayList<String>();
+					values = new LinkedList<String>();
 					nameToValues.put(name, values);
 				} else {
 					repeated = true;
@@ -265,10 +263,9 @@ public class SimpleOAuthValidator implements OAuthValidator {
 	}
 
 	protected void validateSignature(OAuthMessage message,
-			OAuthAccessor accessor) throws OAuthException, IOException,
-			URISyntaxException {
-		OAuthSignatureMethod.newSigner(message.getSignatureMethod(), accessor)
-				.validate(message);
+			OAuthConsumer consumer, OAuthUser user) throws OAuthException,
+			IOException, URISyntaxException {
+		OAuthSignatureMethod.newSigner(consumer, user).validate(message);
 	}
 
 	/** Get the number of milliseconds since midnight, January 1, 1970 UTC. */

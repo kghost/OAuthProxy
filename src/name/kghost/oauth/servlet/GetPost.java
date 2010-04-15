@@ -1,10 +1,8 @@
 package name.kghost.oauth.servlet;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Map;
@@ -14,7 +12,6 @@ import java.util.zip.GZIPInputStream;
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 
 public class GetPost {
 	public GetPost() {
@@ -31,7 +28,7 @@ public class GetPost {
 
 	public String doPost(HttpServletRequest req, String url,
 			Map<String, String> headers, ServletInputStream post,
-			HttpServletResponse resp) throws UnsupportedEncodingException {
+			HttpServletResponse resp) throws IOException {
 		HttpURLConnection conn = null;
 		String postdata = HttpUtil.buildPostData(req);
 		try {
@@ -58,11 +55,11 @@ public class GetPost {
 		} catch (Exception exception) {
 			return HttpUtil.getMessage(url, exception);
 		}
-		return doResponse(url, resp, conn);
+		return doResponse(resp, conn);
 	}
 
 	public String doGet(String url, Map<String, String> headers,
-			HttpServletResponse resp) {
+			HttpServletResponse resp) throws IOException {
 		HttpURLConnection conn = null;
 		try {
 			conn = (HttpURLConnection) new URL(url).openConnection();
@@ -74,46 +71,40 @@ public class GetPost {
 		} catch (Exception exception) {
 			return HttpUtil.getMessage(url, exception);
 		}
-		return doResponse(url, resp, conn);
+		return doResponse(resp, conn);
 	}
 
-	private String doResponse(String url, HttpServletResponse resp,
-			HttpURLConnection conn) {
+	private String doResponse(HttpServletResponse resp, HttpURLConnection conn)
+			throws IOException {
+		int code = conn.getResponseCode();
+		setErrorCode(code);
+		resp.setStatus(code);
+		String contentType = conn.getContentType();
+		if (contentType != null)
+			resp.setContentType(contentType);
+		String contentEnconding = conn.getContentEncoding();
+		HttpUtil.rewriteHeaders(conn, resp);
+		if (contentEnconding == null)
+			contentEnconding = "";
+		InputStream input = null;
+		OutputStream output = null;
 		try {
-			setErrorCode(conn.getResponseCode());
-			resp.setStatus(conn.getResponseCode());
-			String contentType = conn.getContentType();
-			if (contentType != null)
-				resp.setContentType(contentType);
-			String contentEnconding = conn.getContentEncoding();
-			HttpUtil.rewriteHeaders(conn, resp);
-			if (contentEnconding == null)
-				contentEnconding = "";
-			InputStream input = null;
-			BufferedOutputStream output = null;
-			try {
-				if (contentEnconding.indexOf("gzip") >= 0)
-					input = new GZIPInputStream(conn.getInputStream());
-				else
-					input = new BufferedInputStream(conn.getInputStream());
-				output = new BufferedOutputStream(resp.getOutputStream());
-				byte[] b = new byte[512];
-				int i;
-				while ((i = input.read(b)) >= 0)
-					output.write(b, 0, i);
-			} catch (Exception exception2) {
-				return HttpUtil.getMessage(url, exception2);
-			} finally {
-				if (input != null) {
-					input.close();
-				}
-				if (output != null) {
-					output.flush();
-					output.close();
-				}
+			if (contentEnconding.indexOf("gzip") >= 0)
+				input = new GZIPInputStream(conn.getInputStream());
+			else
+				input = conn.getInputStream();
+			output = resp.getOutputStream();
+			byte[] b = new byte[512];
+			int i;
+			while ((i = input.read(b)) >= 0)
+				output.write(b, 0, i);
+		} finally {
+			if (output != null) {
+				output.flush();
 			}
-		} catch (Exception exception1) {
-			return HttpUtil.getMessage(url, exception1);
+			if (input != null) {
+				input.close();
+			}
 		}
 		return null;
 	}

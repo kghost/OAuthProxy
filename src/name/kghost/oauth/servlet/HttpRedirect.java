@@ -13,10 +13,8 @@ public class HttpRedirect extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
-		String host = (String) req.getAttribute("fullhost");
-		String url = host + req.getRequestURI();
-		url += HttpUtil.addQuery(req);
-
+		String url = (String) req.getAttribute("fullhost")
+				+ req.getRequestURI() + HttpUtil.addQuery(req);
 		resp.sendRedirect(url);
 	}
 }

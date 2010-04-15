@@ -13,41 +13,53 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import name.kghost.oauth.lib.OAuthAccessor;
-import name.kghost.oauth.lib.OAuthConsumer;
+import name.kghost.oauth.config.OAuthConsumer;
+import name.kghost.oauth.config.OAuthUser;
+import name.kghost.oauth.lib.OAuth;
 import name.kghost.oauth.lib.OAuthException;
 import name.kghost.oauth.lib.OAuthMessage;
 import name.kghost.oauth.lib.SimpleOAuthValidator;
 
 public class OAuthValidateFilter implements Filter {
-	private OAuthConsumer c;
-
 	@Override
 	public void doFilter(ServletRequest sreq, ServletResponse sresp,
 			FilterChain chain) throws IOException, ServletException {
 		HttpServletRequest req = (HttpServletRequest) sreq;
 		HttpServletResponse resp = (HttpServletResponse) sresp;
 
-		if (req.getParameter(name.kghost.oauth.lib.OAuth.OAUTH_SIGNATURE) != null) {
-			OAuthAccessor a = new OAuthAccessor(c);
-			String token = req.getParameter(name.kghost.oauth.lib.OAuth.OAUTH_TOKEN);
-			if (token != null) {
-				PersistenceManager pm = PMF.get().getPersistenceManager();
-				try {
-					OAuthUser u = pm.getObjectById(OAuthUser.class, token);
-					a.accessToken = u.OAuthToken;
-					a.tokenSecret = u.OAuthTokenSecret;
-				} catch (javax.jdo.JDOObjectNotFoundException e) {
-					resp.sendError(401, e.getLocalizedMessage());
+		if (req.getParameter(OAuth.OAUTH_SIGNATURE) != null) {
+			String consumer = req.getParameter(OAuth.OAUTH_CONSUMER_KEY);
+			if (consumer == null) {
+				resp.sendError(401, "No Consumer Key");
+				return;
+			}
+			String token = req.getParameter(OAuth.OAUTH_TOKEN);
+			OAuthConsumer c;
+			OAuthUser u;
+			PersistenceManager pm = PMF.get().getPersistenceManager();
+			try {
+				c = pm.getObjectById(OAuthConsumer.class, consumer);
+				if (!c.getMethod().equals(
+						req.getParameter(OAuth.OAUTH_SIGNATURE_METHOD))) {
+					resp.sendError(401, "Sign method mismatch");
 					return;
-				} finally {
-					pm.close();
 				}
+				if (token != null) {
+					// token is null when requesting token
+					u = pm.getObjectById(OAuthUser.class, token);
+				} else {
+					u = new OAuthUser(null, null);
+				}
+			} catch (javax.jdo.JDOObjectNotFoundException e) {
+				resp.sendError(401, e.getLocalizedMessage());
+				return;
+			} finally {
+				pm.close();
 			}
 
 			OAuthMessage m = new OAuthMessage(req);
 			try {
-				new SimpleOAuthValidator().validateMessage(m, a);
+				new SimpleOAuthValidator().validateMessage(m, c, u);
 			} catch (OAuthException e) {
 				resp.sendError(401, e.getLocalizedMessage());
 				return;
@@ -61,8 +73,7 @@ public class OAuthValidateFilter implements Filter {
 
 	@Override
 	public void init(FilterConfig conf) throws ServletException {
-		c = new OAuthConsumer(conf.getInitParameter("token"), conf
-				.getInitParameter("secret"));
+		return;
 	}
 
 	@Override

@@ -27,9 +27,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import name.kghost.oauth.config.OAuthConsumer;
+import name.kghost.oauth.config.OAuthUser;
 import name.kghost.oauth.lib.OAuth;
-import name.kghost.oauth.lib.OAuthAccessor;
-import name.kghost.oauth.lib.OAuthConsumer;
 import name.kghost.oauth.lib.OAuthException;
 import name.kghost.oauth.lib.OAuthMessage;
 import name.kghost.oauth.lib.OAuthProblemException;
@@ -57,24 +57,8 @@ public abstract class OAuthSignatureMethod {
 	/**
 	 * @throws OAuthException
 	 */
-	protected void initialize(String name, OAuthAccessor accessor)
-			throws OAuthException {
-		String secret = accessor.consumer.consumerSecret;
-		if (name.endsWith(_ACCESSOR)) {
-			// This code supports the 'Accessor Secret' extensions
-			// described in http://oauth.pbwiki.com/AccessorSecret
-			final String key = OAuthConsumer.ACCESSOR_SECRET;
-			Object accessorSecret = accessor.getProperty(key);
-			if (accessorSecret == null) {
-				accessorSecret = accessor.consumer.getProperty(key);
-			}
-			if (accessorSecret != null) {
-				secret = accessorSecret.toString();
-			}
-		}
-		if (secret == null) {
-			secret = "";
-		}
+	protected void initialize(OAuthConsumer consumer) throws OAuthException {
+		String secret = consumer.getSecret();
 		setConsumerSecret(secret);
 	}
 
@@ -235,23 +219,23 @@ public abstract class OAuthSignatureMethod {
 
 	private static final Base64 BASE64 = new Base64();
 
-	public static OAuthSignatureMethod newSigner(String method,
-			OAuthAccessor accessor) throws OAuthException {
-		OAuthSignatureMethod signer = newMethod(method, accessor);
-		signer.setTokenSecret(accessor.tokenSecret);
+	public static OAuthSignatureMethod newSigner(OAuthConsumer consumer,
+			OAuthUser user) throws OAuthException {
+		OAuthSignatureMethod signer = newMethod(consumer);
+		signer.setTokenSecret(user.getSecret());
 		return signer;
 	}
 
 	/** The factory for signature methods. */
 	@SuppressWarnings("unchecked")
-	public static OAuthSignatureMethod newMethod(String name,
-			OAuthAccessor accessor) throws OAuthException {
+	public static OAuthSignatureMethod newMethod(OAuthConsumer consumer)
+			throws OAuthException {
 		try {
-			Class methodClass = NAME_TO_CLASS.get(name);
+			Class methodClass = NAME_TO_CLASS.get(consumer.getMethod());
 			if (methodClass != null) {
 				OAuthSignatureMethod method = (OAuthSignatureMethod) methodClass
 						.newInstance();
-				method.initialize(name, accessor);
+				method.initialize(consumer);
 				return method;
 			}
 			OAuthProblemException problem = new OAuthProblemException(

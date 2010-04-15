@@ -38,6 +38,7 @@ public class OAuth {
 	public static final String FORM_ENCODED = "application/x-www-form-urlencoded";
 
 	public static final String OAUTH_CONSUMER_KEY = "oauth_consumer_key";
+	public static final String OAUTH_CONSUMER_SECRET = "oauth_consumer_secret";
 	public static final String OAUTH_TOKEN = "oauth_token";
 	public static final String OAUTH_TOKEN_SECRET = "oauth_token_secret";
 	public static final String OAUTH_SIGNATURE_METHOD = "oauth_signature_method";

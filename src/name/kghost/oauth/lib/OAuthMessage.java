@@ -36,32 +36,38 @@ public class OAuthMessage {
 	@SuppressWarnings("unchecked")
 	public OAuthMessage(HttpServletRequest req) {
 		this(req.getMethod(), req.getRequestURL().toString(), req
-				.getParameterMap());
+				.getParameterMap(), null);
 	}
 
 	public OAuthMessage(String method, String url,
-			Map<String, String[]> parameters) {
+			Map<String, String[]> parameters, Map<String, String> overwrite) {
 		this.method = method;
 		this.URL = url;
 		this.parameters = new LinkedList<Pair<String, String>>();
 		for (Map.Entry<String, String[]> p : parameters.entrySet()) {
-			if (p.getKey().equals(OAuth.OAUTH_NONCE)) {
-				O_nonce = p.getValue()[0];
-			} else if (p.getKey().equals(OAuth.OAUTH_SIGNATURE)) {
-				O_signature = p.getValue()[0];
-			} else if (p.getKey().equals(OAuth.OAUTH_SIGNATURE_METHOD)) {
-				O_method = p.getValue()[0];
-			} else if (p.getKey().equals(OAuth.OAUTH_TIMESTAMP)) {
-				O_timestamp = p.getValue()[0];
-			} else if (p.getKey().equals(OAuth.OAUTH_CONSUMER_KEY)) {
-				O_consumer = p.getValue()[0];
-			} else if (p.getKey().equals(OAuth.OAUTH_TOKEN)) {
-				O_token = p.getValue()[0];
-			} else if (p.getKey().equals(OAuth.OAUTH_VERSION)) {
-				O_version = p.getValue()[0];
+			String k = p.getKey();
+			String v;
+			if (overwrite != null && overwrite.containsKey(k)) {
+				v = overwrite.get(k);
+			} else {
+				v = p.getValue()[0];
 			}
-			this.parameters.add(new Pair<String, String>(p.getKey(), p
-					.getValue()[0]));
+			if (p.getKey().equals(OAuth.OAUTH_NONCE)) {
+				O_nonce = v;
+			} else if (k.equals(OAuth.OAUTH_SIGNATURE)) {
+				O_signature = v;
+			} else if (k.equals(OAuth.OAUTH_SIGNATURE_METHOD)) {
+				O_method = v;
+			} else if (k.equals(OAuth.OAUTH_TIMESTAMP)) {
+				O_timestamp = v;
+			} else if (k.equals(OAuth.OAUTH_CONSUMER_KEY)) {
+				O_consumer = v;
+			} else if (k.equals(OAuth.OAUTH_TOKEN)) {
+				O_token = v;
+			} else if (k.equals(OAuth.OAUTH_VERSION)) {
+				O_version = v;
+			}
+			this.parameters.add(new Pair<String, String>(k, v));
 		}
 	}
 
