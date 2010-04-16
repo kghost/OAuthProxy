@@ -13,6 +13,9 @@ import javax.xml.bind.annotation.XmlElementDecl;
 import javax.xml.bind.annotation.XmlRegistry;
 import javax.xml.namespace.QName;
 
+import name.kghost.oauth.config.persistent.OAuthConsumer;
+import name.kghost.oauth.config.persistent.OAuthUser;
+
 
 /**
  * This object contains factory methods for each 

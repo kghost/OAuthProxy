@@ -18,8 +18,8 @@ package name.kghost.oauth.lib;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
-import name.kghost.oauth.config.OAuthConsumer;
-import name.kghost.oauth.config.OAuthUser;
+import name.kghost.oauth.config.persistent.OAuthConsumer;
+import name.kghost.oauth.config.persistent.OAuthUser;
 
 //TODO: move this interface into oauth-provider
 /**

@@ -27,8 +27,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import name.kghost.oauth.config.OAuthConsumer;
-import name.kghost.oauth.config.OAuthUser;
+import name.kghost.oauth.config.persistent.OAuthConsumer;
+import name.kghost.oauth.config.persistent.OAuthUser;
 import name.kghost.oauth.lib.OAuth;
 import name.kghost.oauth.lib.OAuthException;
 import name.kghost.oauth.lib.OAuthMessage;

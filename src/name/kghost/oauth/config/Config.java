@@ -16,6 +16,8 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.transform.TransformerFactoryConfigurationError;
 
+import name.kghost.oauth.config.persistent.OAuthConsumer;
+import name.kghost.oauth.config.persistent.OAuthUser;
 import name.kghost.oauth.filter.PMF;
 
 public class Config extends HttpServlet {
@@ -90,7 +92,7 @@ public class Config extends HttpServlet {
 				List<OAuthConsumer> results = (List<OAuthConsumer>) query
 						.execute();
 				for (OAuthConsumer e : results) {
-					e = pm.getObjectById(OAuthConsumer.class, e.key);
+					e = pm.getObjectById(OAuthConsumer.class, e.getKey());
 					c.getConsumers().add(e);
 				}
 			} finally {
@@ -100,7 +102,7 @@ public class Config extends HttpServlet {
 			try {
 				List<OAuthUser> results = (List<OAuthUser>) query.execute();
 				for (OAuthUser e : results) {
-					e.secret = "<Secret>";
+					e = pm.getObjectById(OAuthUser.class, e.getToken());
 					c.getUsers().add(e);
 				}
 			} finally {
@@ -114,7 +116,7 @@ public class Config extends HttpServlet {
 		OutputStream output = resp.getOutputStream();
 		try {
 			resp.setContentType("application/xml");
-			String proc = "<?xml version=\"1.0\"?>\n<?xml-stylesheet type=\"text/xsl\" href=\"/xsl/config.xsl\"?>\n";
+			String proc = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<?xml-stylesheet type=\"text/xsl\" href=\"/xsl/config.xsl\"?>\n";
 			output.write(proc.getBytes("UTF-8"));
 			Marshaller u = JAXBContext.newInstance(OAuthConfig.class)
 					.createMarshaller();

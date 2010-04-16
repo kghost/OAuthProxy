@@ -30,8 +30,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import name.kghost.oauth.config.OAuthConsumer;
-import name.kghost.oauth.config.OAuthUser;
+import name.kghost.oauth.config.persistent.OAuthConsumer;
+import name.kghost.oauth.config.persistent.OAuthUser;
 import name.kghost.oauth.lib.signature.OAuthSignatureMethod;
 
 //TODO: move this class into oauth-provider

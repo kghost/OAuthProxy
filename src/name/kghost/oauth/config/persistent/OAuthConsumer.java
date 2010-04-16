@@ -6,7 +6,7 @@
 //
 
 
-package name.kghost.oauth.config;
+package name.kghost.oauth.config.persistent;
 
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.PersistenceCapable;

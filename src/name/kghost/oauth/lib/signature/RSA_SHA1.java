@@ -31,7 +31,7 @@ import java.security.spec.KeySpec;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 
-import name.kghost.oauth.config.OAuthConsumer;
+import name.kghost.oauth.config.persistent.OAuthConsumer;
 import name.kghost.oauth.lib.OAuth;
 import name.kghost.oauth.lib.OAuthException;
 import name.kghost.oauth.lib.signature.pem.PEMReader;

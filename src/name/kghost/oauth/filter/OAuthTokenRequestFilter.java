@@ -15,7 +15,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import name.kghost.oauth.config.OAuthUser;
+import name.kghost.oauth.config.persistent.OAuthUser;
 import name.kghost.oauth.lib.OAuth;
 
 public class OAuthTokenRequestFilter implements Filter {
