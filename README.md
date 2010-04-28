@@ -1,13 +1,13 @@
 # OAuthProxy Manual #
 
-## How to Use an Existing OAuthProxy ##
+## 1. How to Use an Existing OAuthProxy ##
 
-### Requirement ###
+### 1.1. Requirement ###
 
 1. A client support OAuth and can change api url. (chromed_bird, also...)
 1. A OAuthProxy server support the client you use. (you can setup your own on GAE, see next section)
 
-### Setup Client ###
+### 1.2. Setup Client ###
 
 Assume you will use OAuthProxy at https://your-proxy.example.com/
 
@@ -28,16 +28,16 @@ Step.3 Get Access Token
 
 Enter the pin code taken from previous step in client, enjoy yourself if nothing wrong happened. **If something wrong happened after entered the pin code, please restart from 1st step, the pin code can't be used once more**
 
-## How to Setup OAuthProxy on GAE Server ##
+## 2. How to Setup OAuthProxy on GAE Server ##
 
-### Requirement ###
+### 2.1. Requirement ###
 
 1. The consumer secret of clients the proxy support. If the secret is unknown, the proxy **CAN'T** proxy requests from this kind of client. You can find it easily if it is open source client, or do reverse engineering.
 2. An Google App Engine account.
 3. JDK 1.5+. Please download form java.sun.com. (I'm using openjdk 1.6 and don't known if 1.5 works, but it should work)
-4. maven2 (recommend) or eclipse.
+4. maven2 (recommend), ant or eclipse.
 
-### Preparation ###
+### 2.2. Preparation ###
 
 ##### First download code from github. #####
 
@@ -75,7 +75,11 @@ Open war/WEB-INF/appengine-web.xml, find
 
 change to your application id, *it is application id, not google account name.*
 
-### Setup a GAE Server using Maven ###
+### 2.3. Compile and Deploy to GAE Server ###
+
+You have 3 choices, use Maven, Ant, or Eclipse.
+
+#### 2.3.1. Setup a GAE Server using Maven ####
 
 Enter OAuthProxy directory, run
 
@@ -89,15 +93,31 @@ If it is the first time use maven gae, you should run
 
 to downlaod google appengine sdk to maven repository.
 
+#### 2.3.2. Setup a GAE Server using Ant ####
+
+Download Google App Engine SDK for Java from [here](http://code.google.com/appengine/downloads.html), unpack to somewhere.
+
+Edit build.xml, change the location of sdk.dir to where you unpack the sdk:
+
+    <property name="sdk.dir" location="../appengine-java-sdk" />
+
+Enter OAuthProxy directory, run
+
+    ant compile
+    ant update_indexes
+    ant update
+
+then Ant will compile the source code and deploy OAuthProxy to GAE.
+
 **It is not done, you must configure it before use, see next**
 
-### Setup a GAE Server using Eclipse ###
+#### 2.3.3. Setup a GAE Server using Eclipse ####
 
 Please follow google official instruction.
 
 **It is not done, you must configure it before use, see next**
 
-### Configure OAuthProxy ###
+### 2.4. Configure OAuthProxy ###
 
 Open https://your-application-id.appspot.com/config, add client consumer token/secret here, you can add multiple clients.
 (past consumer token/secret, click "+" to the left)
