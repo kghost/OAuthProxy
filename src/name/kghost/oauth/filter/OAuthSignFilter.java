@@ -2,7 +2,6 @@ package name.kghost.oauth.filter;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.net.URLEncoder;
 import java.util.Map;
 
 import javax.jdo.PersistenceManager;
