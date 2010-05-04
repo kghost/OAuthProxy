@@ -43,8 +43,7 @@ Enter the pin code taken from previous step in client, enjoy yourself if nothing
 
     git clone git://github.com/kghost/OAuthProxy.git
 
-##### Then request an consumer token/secret. #####
-(optional, but strongly recommended, the hard coded token is public known, it is not secure)  
+##### Then request an consumer token/secret. (optional, but strongly recommended, the hard coded token is public known, it is not secure) #####
 ([here for twitter](https://twitter.com/apps). For "Application Type" choose client not browser, leave callback url empty)  
 Open OAuthProxy/war/WEB-INF/web.xml, find this block
 

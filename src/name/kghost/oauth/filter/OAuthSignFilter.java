@@ -67,8 +67,7 @@ public class OAuthSignFilter implements Filter {
 						.getParameterMap(), headers);
 				OAuthSignatureMethod o = OAuthSignatureMethod.newSigner(c, u);
 				String sig = o.getSignature(m);
-				headers.put(OAuth.OAUTH_SIGNATURE, URLEncoder.encode(sig,
-						"UTF-8"));
+				headers.put(OAuth.OAUTH_SIGNATURE, sig);
 			} catch (OAuthException e) {
 				resp.sendError(500, e.getLocalizedMessage());
 				return;

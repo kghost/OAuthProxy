@@ -83,7 +83,7 @@ public class GetPost {
 		if (contentType != null)
 			resp.setContentType(contentType);
 		String contentEnconding = conn.getContentEncoding();
-		HttpUtil.rewriteHeaders(conn, resp);
+		HttpUtil.rewriteResponseHeaders(conn, resp);
 		if (contentEnconding == null)
 			contentEnconding = "";
 		InputStream input = null;

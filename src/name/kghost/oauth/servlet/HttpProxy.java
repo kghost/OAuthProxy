@@ -17,7 +17,7 @@ public class HttpProxy extends HttpServlet {
 		String host = (String) req.getAttribute("fullhost");
 		String url = host + req.getRequestURI();
 		url += HttpUtil.addQuery(req);
-		Map<String, String> hashtable = HttpUtil.getHeaders(req);
+		Map<String, String> hashtable = HttpUtil.getRequestHeaders(req);
 		hashtable.remove("host");
 		hashtable.put("Host", (String) req.getAttribute("host"));
 		GetPost getpost = new GetPost();
@@ -37,7 +37,7 @@ public class HttpProxy extends HttpServlet {
 		String host = (String) req.getAttribute("fullhost");
 		String url = host + req.getRequestURI();
 		url += HttpUtil.addQuery(req);
-		Map<String, String> headers = HttpUtil.getHeaders(req);
+		Map<String, String> headers = HttpUtil.getRequestHeaders(req);
 		headers.remove("host");
 		headers.put("Host", (String) req.getAttribute("host"));
 		GetPost getpost = new GetPost();

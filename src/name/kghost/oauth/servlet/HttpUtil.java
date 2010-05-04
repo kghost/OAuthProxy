@@ -19,7 +19,7 @@ import javax.servlet.http.HttpUtils;
 @SuppressWarnings("deprecation")
 public class HttpUtil {
 	@SuppressWarnings("unchecked")
-	static Map<String, String> getHeaders(HttpServletRequest req) {
+	static Map<String, String> getRequestHeaders(HttpServletRequest req) {
 		Map<String, String> headers = new HashMap<String, String>();
 		Enumeration<String> h = req.getHeaderNames();
 		while (h.hasMoreElements()) {
@@ -30,7 +30,8 @@ public class HttpUtil {
 	}
 
 	@SuppressWarnings( { "unchecked" })
-	static String addQuery(HttpServletRequest req) {
+	static String addQuery(HttpServletRequest req)
+			throws UnsupportedEncodingException {
 		StringBuilder sb = new StringBuilder();
 		String query = req.getQueryString();
 		if (query == null) {
@@ -53,11 +54,14 @@ public class HttpUtil {
 		}
 	}
 
-	private static void addQueryParam(StringBuilder sb, String k, String v) {
+	private static void addQueryParam(StringBuilder sb, String k, String v)
+			throws UnsupportedEncodingException {
 		if (sb.length() == 0) {
-			sb.append("?").append(k).append("=").append(v);
+			sb.append("?").append(k).append("=").append(
+					URLEncoder.encode(v, "UTF-8"));
 		} else {
-			sb.append("&").append(k).append("=").append(v);
+			sb.append("&").append(k).append("=").append(
+					URLEncoder.encode(v, "UTF-8"));
 		}
 	}
 
@@ -74,7 +78,8 @@ public class HttpUtil {
 				stringwriter.getBuffer().toString()).toString();
 	}
 
-	static void rewriteHeaders(URLConnection conn, HttpServletResponse resp) {
+	static void rewriteResponseHeaders(URLConnection conn,
+			HttpServletResponse resp) {
 		Map<String, List<String>> map = conn.getHeaderFields();
 		if (map != null) {
 			for (Map.Entry<String, List<String>> header : map.entrySet()) {
@@ -102,8 +107,7 @@ public class HttpUtil {
 			String k = param.getKey();
 			if (!hs.containsKey(k)) {
 				for (String v : param.getValue()) {
-					String v2 = URLEncoder.encode(v, "UTF-8");
-					addPostParam(sb, k, v2);
+					addPostParam(sb, k, v);
 				}
 			} else {
 				addPostParam(sb, k, hs.get(k));
@@ -113,10 +117,11 @@ public class HttpUtil {
 		return postdata;
 	}
 
-	private static void addPostParam(StringBuilder sb, String k, String v) {
+	private static void addPostParam(StringBuilder sb, String k, String v)
+			throws UnsupportedEncodingException {
 		if (sb.length() > 0)
 			sb.append("&");
-		sb.append(k).append("=").append(v);
+		sb.append(k).append("=").append(URLEncoder.encode(v, "UTF-8"));
 	}
 
 	@SuppressWarnings("unchecked")
