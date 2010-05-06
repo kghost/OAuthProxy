@@ -18,7 +18,7 @@
 				<h1>OAuth Proxy Config</h1>
 				<hr />
 				<h2>Consumer</h2>
-				<form id="ConsumerAddForm" method="get">
+				<form id="ConsumerAddForm" method="get" action="#">
 					<table border="1">
 						<tr>
 							<th width="20" />
@@ -32,12 +32,7 @@
 							<input type="hidden" name="action" value="ConsumerAdd"
 								hidden="true" />
 							<td>
-								<b>
-									<a
-										href="javascript: document.getElementById('ConsumerAddForm').submit();">
-										<xsl:text>+</xsl:text>
-									</a>
-								</b>
+								<input type="submit" value="+" />
 							</td>
 							<td>
 								<input name="key" style="width:98%" />
@@ -76,13 +71,14 @@
 		<tr>
 			<td>
 				<b>
-					<a>
-						<xsl:attribute name="href">
-					   	<xsl:text>config?action=ConsumerDel&amp;key=</xsl:text>
-					   	<xsl:value-of select="@Key" />
+					<button type="button">
+						<xsl:attribute name="onclick">
+							<xsl:text>location.href='config?action=ConsumerDel&amp;key=</xsl:text>
+							<xsl:value-of select="@Key" />
+							<xsl:text>';return false;</xsl:text>
 						</xsl:attribute>
-						<xsl:text>--</xsl:text>
-					</a>
+						<xsl:text>-</xsl:text>
+					</button>
 				</b>
 			</td>
 			<td>
@@ -104,13 +100,14 @@
 		<tr>
 			<td>
 				<b>
-					<a>
-						<xsl:attribute name="href">
-					   	<xsl:text>config?action=UserDel&amp;token=</xsl:text>
-					   	<xsl:value-of select="Token" />
+					<button type="button">
+						<xsl:attribute name="onclick">
+							<xsl:text>location.href='config?action=UserDel&amp;token=</xsl:text>
+							<xsl:value-of select="Token" />
+							<xsl:text>';return false;</xsl:text>
 						</xsl:attribute>
-						<xsl:text>--</xsl:text>
-					</a>
+						<xsl:text>-</xsl:text>
+					</button>
 				</b>
 			</td>
 			<td>
