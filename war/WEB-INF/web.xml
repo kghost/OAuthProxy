@@ -101,5 +101,8 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 		<auth-constraint>
 			<role-name>admin</role-name>
 		</auth-constraint>
+		<user-data-constraint>
+			<transport-guarantee>CONFIDENTIAL</transport-guarantee>
+		</user-data-constraint>
 	</security-constraint>
 </web-app>
