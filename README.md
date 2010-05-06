@@ -43,30 +43,6 @@ Enter the pin code taken from previous step in client, enjoy yourself if nothing
 
     git clone git://github.com/kghost/OAuthProxy.git
 
-##### Then request an consumer token/secret. (optional, but strongly recommended, the hard coded token is public known, it is not secure) #####
-([here for twitter](https://twitter.com/apps). For "Application Type" choose client not browser, leave callback url empty)  
-Open OAuthProxy/war/WEB-INF/web.xml, find this block
-
-     <filter>
-       <filter-name>OAuthSignFilter</filter-name>
-       <filter-class>name.kghost.oauth.filter.OAuthSignFilter</filter-class>
-       <init-param>
-         <param-name>token</param-name>
-         <param-value>i1yxg2pFEnJSJ7cihtLUzQ</param-value>
-       </init-param>
-       <init-param>
-         <param-name>method</param-name>
-         <param-value>HMAC-SHA1</param-value>
-       </init-param>
-       <init-param>
-         <param-name>secret</param-name>
-         <param-value>KHA4tKlHYtuO5j02k0HV4AceObdTiVitH9UMuqkuF24</param-value>
-       </init-param>
-     </filter>
-
-change the token/secret to what you got yet, leave method away.
-
-
 ##### Change application id #####
 Open war/WEB-INF/appengine-web.xml, find  
 

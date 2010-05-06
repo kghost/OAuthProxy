@@ -36,9 +36,16 @@ public class Config extends HttpServlet {
 				if (key != null && method != null && secret != null) {
 					PersistenceManager pm = PMF.get().getPersistenceManager();
 					try {
-						pm
-								.makePersistent(new OAuthConsumer(key, method,
-										secret));
+						String replace = req.getParameter("replace");
+						OAuthConsumer c;
+						if (replace != null && replace.length() > 0) {
+							OAuthConsumer r = pm.getObjectById(
+									OAuthConsumer.class, replace);
+							c = new OAuthConsumer(key, method, secret, r.getKey());
+						} else {
+							c = new OAuthConsumer(key, method, secret);
+						}
+						pm.makePersistent(c);
 						resp.sendRedirect(req.getRequestURI());
 					} finally {
 						pm.close();

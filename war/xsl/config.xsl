@@ -25,6 +25,7 @@
 							<th width="250">Key</th>
 							<th width="100">Method</th>
 							<th width="500">Secret</th>
+							<th width="250">Replace With Consumer</th>
 						</tr>
 						<xsl:apply-templates select="consumers" />
 						<tr>
@@ -51,6 +52,9 @@
 							<td>
 								<input name="secret" style="width:99%" />
 							</td>
+							<td>
+								<input name="replace" style="width:99%" />
+							</td>
 						</tr>
 					</table>
 				</form>
@@ -75,20 +79,23 @@
 					<a>
 						<xsl:attribute name="href">
 					   	<xsl:text>config?action=ConsumerDel&amp;key=</xsl:text>
-					   	<xsl:value-of select="Key" />
+					   	<xsl:value-of select="@Key" />
 						</xsl:attribute>
 						<xsl:text>--</xsl:text>
 					</a>
 				</b>
 			</td>
 			<td>
-				<xsl:value-of select="Key" />
+				<xsl:value-of select="@Key" />
 			</td>
 			<td>
 				<xsl:value-of select="Method" />
 			</td>
 			<td>
 				<xsl:value-of select="Secret" />
+			</td>
+			<td>
+				<xsl:value-of select="@ReplaceKey" />
 			</td>
 		</tr>
 	</xsl:template>

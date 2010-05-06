@@ -30,18 +30,6 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 	<filter>
 		<filter-name>OAuthSignFilter</filter-name>
 		<filter-class>name.kghost.oauth.filter.OAuthSignFilter</filter-class>
-		<init-param>
-			<param-name>token</param-name>
-			<param-value>i1yxg2pFEnJSJ7cihtLUzQ</param-value>
-		</init-param>
-		<init-param>
-			<param-name>method</param-name>
-			<param-value>HMAC-SHA1</param-value>
-		</init-param>
-		<init-param>
-			<param-name>secret</param-name>
-			<param-value>KHA4tKlHYtuO5j02k0HV4AceObdTiVitH9UMuqkuF24</param-value>
-		</init-param>
 	</filter>
 
 	<filter>

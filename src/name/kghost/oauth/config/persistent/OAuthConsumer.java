@@ -14,6 +14,7 @@ import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
@@ -28,10 +29,11 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element name="Key" type="{http://www.w3.org/2001/XMLSchema}string"/>
  *         &lt;element name="Method" type="{http://www.w3.org/2001/XMLSchema}string"/>
  *         &lt;element name="Secret" type="{http://www.w3.org/2001/XMLSchema}string"/>
  *       &lt;/sequence>
+ *       &lt;attribute name="Key" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;attribute name="ReplaceKey" type="{http://www.w3.org/2001/XMLSchema}string" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -41,55 +43,39 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "OAuthConsumer", propOrder = {
-    "key",
     "method",
     "secret"
 })
 @PersistenceCapable
 public class OAuthConsumer {
 
-    @XmlElement(name = "Key", required = true)
-    @PrimaryKey
-    @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
-    protected String key;
     @XmlElement(name = "Method", required = true)
     @Persistent
     protected String method;
     @XmlElement(name = "Secret", required = true)
     @Persistent
     protected String secret;
+    @XmlAttribute(name = "Key")
+    @PrimaryKey
+    @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
+    protected String key;
+    @XmlAttribute(name = "ReplaceKey")
+    @Persistent
+    protected String replaceKey;
 
     public OAuthConsumer(String key, String method, String secret) {
+    	this(key, method, secret, key);
+    }
+
+    public OAuthConsumer(String key, String method, String secret,
+			String replace) {
     	this.key = key;
     	this.method = method;
     	this.secret = secret;
-    }
+    	this.replaceKey = replace;
+	}
 
-    /**
-     * Gets the value of the key property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getKey() {
-        return key;
-    }
-
-    /**
-     * Sets the value of the key property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setKey(String value) {
-        this.key = value;
-    }
-
-    /**
+	/**
      * Gets the value of the method property.
      * 
      * @return
@@ -135,6 +121,54 @@ public class OAuthConsumer {
      */
     public void setSecret(String value) {
         this.secret = value;
+    }
+
+    /**
+     * Gets the value of the key property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getKey() {
+        return key;
+    }
+
+    /**
+     * Sets the value of the key property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setKey(String value) {
+        this.key = value;
+    }
+
+    /**
+     * Gets the value of the replaceKey property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getReplaceKey() {
+        return replaceKey;
+    }
+
+    /**
+     * Sets the value of the replaceKey property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setReplaceKey(String value) {
+        this.replaceKey = value;
     }
 
 }

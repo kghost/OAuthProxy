@@ -23,8 +23,6 @@ import name.kghost.oauth.lib.signature.OAuthSignatureMethod;
 import name.kghost.oauth.servlet.HttpUtil;
 
 public class OAuthSignFilter implements Filter {
-	private OAuthConsumer c;
-
 	@SuppressWarnings("unchecked")
 	@Override
 	public void doFilter(ServletRequest sreq, ServletResponse sresp,
@@ -33,39 +31,42 @@ public class OAuthSignFilter implements Filter {
 		HttpServletResponse resp = (HttpServletResponse) sresp;
 
 		if (req.getParameter(OAuth.OAUTH_SIGNATURE) != null) {
-			String token = req.getParameter(OAuth.OAUTH_TOKEN);
-			if (token == null
-					&& req.getParameter(OAuth.OAUTH_CONSUMER_KEY) == null) {
+			String consumer_key = req.getParameter(OAuth.OAUTH_CONSUMER_KEY);
+			if (consumer_key == null) {
 				resp.sendError(401, "Token not found.");
 				return;
 			}
+
+			OAuthConsumer c;
 			OAuthUser u;
-			if (token != null) {
-				PersistenceManager pm = PMF.get().getPersistenceManager();
-				try {
+			PersistenceManager pm = PMF.get().getPersistenceManager();
+			try {
+				OAuthConsumer t = pm.getObjectById(OAuthConsumer.class, consumer_key);
+				c = pm.getObjectById(OAuthConsumer.class, t.getReplaceKey());
+
+				String token = req.getParameter(OAuth.OAUTH_TOKEN);
+				if (token != null) {
 					u = pm.getObjectById(OAuthUser.class, token);
-				} catch (javax.jdo.JDOObjectNotFoundException e) {
-					resp.sendError(401, e.getLocalizedMessage());
-					return;
-				} finally {
-					pm.close();
+				} else {
+					u = new OAuthUser(null, null);
 				}
-			} else {
-				u = new OAuthUser(null, null);
+			} catch (javax.jdo.JDOObjectNotFoundException e) {
+				resp.sendError(401, e.getLocalizedMessage());
+				return;
+			} finally {
+				pm.close();
 			}
 
 			try {
 				String url = (String) req.getAttribute("fullhost")
 						+ req.getRequestURI();
 				Map<String, String> headers = HttpUtil.getOverwriteParams(req);
-				headers.put(OAuth.OAUTH_CONSUMER_KEY, c.getKey());
-				headers
-						.put(OAuth.OAUTH_SIGNATURE_METHOD, c
-								.getMethod());
 				OAuthMessage m = new OAuthMessage(req.getMethod(), url, req
 						.getParameterMap(), headers);
 				OAuthSignatureMethod o = OAuthSignatureMethod.newSigner(c, u);
 				String sig = o.getSignature(m);
+				headers.put(OAuth.OAUTH_CONSUMER_KEY, c.getKey());
+				headers.put(OAuth.OAUTH_SIGNATURE_METHOD, c.getMethod());
 				headers.put(OAuth.OAUTH_SIGNATURE, sig);
 			} catch (OAuthException e) {
 				resp.sendError(500, e.getLocalizedMessage());
@@ -80,8 +81,7 @@ public class OAuthSignFilter implements Filter {
 
 	@Override
 	public void init(FilterConfig conf) throws ServletException {
-		c = new OAuthConsumer(conf.getInitParameter("token"), conf
-				.getInitParameter("method"), conf.getInitParameter("secret"));
+		return;
 	}
 
 	@Override
