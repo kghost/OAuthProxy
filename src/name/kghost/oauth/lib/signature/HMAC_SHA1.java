@@ -18,6 +18,7 @@ package name.kghost.oauth.lib.signature;
 
 import java.io.UnsupportedEncodingException;
 import java.security.GeneralSecurityException;
+import java.util.logging.Logger;
 
 import javax.crypto.Mac;
 import javax.crypto.SecretKey;
@@ -36,8 +37,7 @@ class HMAC_SHA1 extends OAuthSignatureMethod {
 	@Override
 	protected String getSignature(String baseString) throws OAuthException {
 		try {
-			String signature = base64Encode(computeSignature(baseString));
-			return signature;
+			return base64Encode(computeSignature(baseString));
 		} catch (GeneralSecurityException e) {
 			throw new OAuthException(e);
 		} catch (UnsupportedEncodingException e) {
@@ -66,6 +66,7 @@ class HMAC_SHA1 extends OAuthSignatureMethod {
 			if (this.key == null) {
 				String keyString = OAuth.percentEncode(getConsumerSecret())
 						+ '&' + OAuth.percentEncode(getTokenSecret());
+				Logger.getLogger("OAuth").info("Key :" + keyString);
 				byte[] keyBytes = keyString.getBytes(ENCODING);
 				this.key = new SecretKeySpec(keyBytes, MAC_NAME);
 			}

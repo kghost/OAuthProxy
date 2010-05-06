@@ -26,6 +26,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Logger;
 
 import name.kghost.oauth.config.persistent.OAuthConsumer;
 import name.kghost.oauth.config.persistent.OAuthUser;
@@ -50,7 +51,9 @@ public abstract class OAuthSignatureMethod {
 			IOException, URISyntaxException {
 		String baseString = getBaseString(message.URL, message.method, message
 				.getParameters());
+		Logger.getLogger("OAuth").info("BaseString :" + baseString);
 		String signature = getSignature(baseString);
+		Logger.getLogger("OAuth").info("Signature :" + signature);
 		return signature;
 	}
 

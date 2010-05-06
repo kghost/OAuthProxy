@@ -61,12 +61,12 @@ public class OAuthSignFilter implements Filter {
 				String url = (String) req.getAttribute("fullhost")
 						+ req.getRequestURI();
 				Map<String, String> headers = HttpUtil.getOverwriteParams(req);
+				headers.put(OAuth.OAUTH_CONSUMER_KEY, c.getKey());
+				headers.put(OAuth.OAUTH_SIGNATURE_METHOD, c.getMethod());
 				OAuthMessage m = new OAuthMessage(req.getMethod(), url, req
 						.getParameterMap(), headers);
 				OAuthSignatureMethod o = OAuthSignatureMethod.newSigner(c, u);
 				String sig = o.getSignature(m);
-				headers.put(OAuth.OAUTH_CONSUMER_KEY, c.getKey());
-				headers.put(OAuth.OAUTH_SIGNATURE_METHOD, c.getMethod());
 				headers.put(OAuth.OAUTH_SIGNATURE, sig);
 			} catch (OAuthException e) {
 				resp.sendError(500, e.getLocalizedMessage());
