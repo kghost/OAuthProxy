@@ -70,16 +70,14 @@
 	<xsl:template match="consumers">
 		<tr>
 			<td>
-				<b>
-					<button type="button">
-						<xsl:attribute name="onclick">
-							<xsl:text>location.href='config?action=ConsumerDel&amp;key=</xsl:text>
-							<xsl:value-of select="@Key" />
-							<xsl:text>';return false;</xsl:text>
-						</xsl:attribute>
-						<xsl:text>-</xsl:text>
-					</button>
-				</b>
+				<button type="button">
+					<xsl:attribute name="onclick">
+						<xsl:text>location.href='config?action=ConsumerDel&amp;key=</xsl:text>
+						<xsl:value-of select="@Key" />
+						<xsl:text>';return false;</xsl:text>
+					</xsl:attribute>
+					<xsl:text>-</xsl:text>
+				</button>
 			</td>
 			<td>
 				<xsl:value-of select="@Key" />
@@ -99,16 +97,14 @@
 	<xsl:template match="users">
 		<tr>
 			<td>
-				<b>
-					<button type="button">
-						<xsl:attribute name="onclick">
-							<xsl:text>location.href='config?action=UserDel&amp;token=</xsl:text>
-							<xsl:value-of select="Token" />
-							<xsl:text>';return false;</xsl:text>
-						</xsl:attribute>
-						<xsl:text>-</xsl:text>
-					</button>
-				</b>
+				<button type="button">
+					<xsl:attribute name="onclick">
+						<xsl:text>location.href='config?action=UserDel&amp;token=</xsl:text>
+						<xsl:value-of select="Token" />
+						<xsl:text>';return false;</xsl:text>
+					</xsl:attribute>
+					<xsl:text>-</xsl:text>
+				</button>
 			</td>
 			<td>
 				<xsl:value-of select="Token" />
