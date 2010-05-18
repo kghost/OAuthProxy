@@ -1,5 +1,66 @@
 # OAuthProxy Manual #
 
+## 0. Compliant Clients ##
+
+<table>
+  <tr>
+    <th>Client</th>
+    <th>Platform</th>
+    <th>Status</th>
+    <th>Auth Type</th>
+    <th>Consumer Key</th>
+    <th>Consumer Secret</th>
+    <th>Comment</th>
+  </tr>
+  <tr>
+    <td>chromed_bird</td>
+    <td>Chrome</td>
+    <td>OK (tested)</td>
+    <td>OAuth</td>
+    <td>KkrTiBu0hEMJ9dqS3YCxw</td>
+    <td>MsuvABdvwSn2ezvdQzN4uiRR44JK8jESTIJ1hrhe0U</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>echofon for firefox</td>
+    <td>Firefox</td>
+    <td>OK (tested)</td>
+    <td>OAuth with xauth</td>
+    <td>yqoymTNrS9ZDGsBnlFhIuw</td>
+    <td>OMai1whT3sT3XMskI7DZ7xiju5i5rAYJnxSEHaKYvEs</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>Tweetie</td>
+    <td>iPhone</td>
+    <td>OK (tested)</td>
+    <td>Basic</td>
+    <td></td>
+    <td></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>TwitBird</td>
+    <td>iPhone</td>
+    <td>OK (tested)</td>
+    <td>Basic</td>
+    <td></td>
+    <td></td>
+    <td>set api proxy to https://your-site.appspot.com</td>
+  </tr>
+  <tr>
+    <td>twhirl</td>
+    <td>Adobe Air</td>
+    <td>OK (tested)</td>
+    <td>Basic</td>
+    <td></td>
+    <td></td>
+    <td>use laconi.ca with username your-twitter-account@yout-site.appspot.com</td>
+  </tr>
+</table>
+
+and it should work with any client support laconi.ca without change.
+
 ## 1. How to Use an Existing OAuthProxy ##
 
 ### 1.1. Requirement ###
