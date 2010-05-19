@@ -57,6 +57,15 @@
     <td></td>
     <td>use laconi.ca with username your-twitter-account@yout-site.appspot.com</td>
   </tr>
+  <tr>
+    <td>Gravity</td>
+    <td>Symbian</td>
+    <td>OK (tested)</td>
+    <td>Basic</td>
+    <td></td>
+    <td></td>
+    <td>use laconi.ca with username your-twitter-account and api url yout-site.appspot.com/1</td>
+  </tr>
 </table>
 
 and it should work with any client support laconi.ca without change.
