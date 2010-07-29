@@ -29,7 +29,7 @@ public class HttpUtil {
 		return headers;
 	}
 
-	@SuppressWarnings( { "unchecked" })
+	@SuppressWarnings("unchecked")
 	static String addQuery(HttpServletRequest req)
 			throws UnsupportedEncodingException {
 		StringBuilder sb = new StringBuilder();
@@ -57,11 +57,11 @@ public class HttpUtil {
 	private static void addQueryParam(StringBuilder sb, String k, String v)
 			throws UnsupportedEncodingException {
 		if (sb.length() == 0) {
-			sb.append("?").append(k).append("=").append(
-					URLEncoder.encode(v, "UTF-8"));
+			sb.append("?").append(k).append("=")
+					.append(URLEncoder.encode(v, "UTF-8"));
 		} else {
-			sb.append("&").append(k).append("=").append(
-					URLEncoder.encode(v, "UTF-8"));
+			sb.append("&").append(k).append("=")
+					.append(URLEncoder.encode(v, "UTF-8"));
 		}
 	}
 
@@ -72,10 +72,10 @@ public class HttpUtil {
 		StringWriter stringwriter = new StringWriter();
 		PrintWriter printwriter = new PrintWriter(stringwriter);
 		exception.printStackTrace(printwriter);
-		return (new StringBuilder()).append("Request: ").append(url).append(
-				"\nException: ").append(s1).append(": ").append(
-				exception.getMessage()).append("\n").append(
-				stringwriter.getBuffer().toString()).toString();
+		return (new StringBuilder()).append("Request: ").append(url)
+				.append("\nException: ").append(s1).append(": ")
+				.append(exception.getMessage()).append("\n")
+				.append(stringwriter.getBuffer().toString()).toString();
 	}
 
 	static void rewriteResponseHeaders(URLConnection conn,
@@ -83,16 +83,21 @@ public class HttpUtil {
 		Map<String, List<String>> map = conn.getHeaderFields();
 		if (map != null) {
 			for (Map.Entry<String, List<String>> header : map.entrySet()) {
-				if (!header.getKey().equals("Content-Type")) {
-					StringBuilder s1 = new StringBuilder();
-					for (String v : header.getValue()) {
-						if (s1.length() > 0)
-							s1.append(", ").append(v);
-						else
-							s1.append(v);
-					}
-					resp.setHeader(header.getKey(), s1.toString());
+				if (header.getKey().equals("content-length")) {
+					continue;
 				}
+				if (header.getKey().equals("content-encoding")) {
+					continue;
+				}
+				StringBuilder s1 = new StringBuilder();
+				for (String v : header.getValue()) {
+					if (s1.length() > 0)
+						s1.append(", ").append(v);
+					else
+						s1.append(v);
+				}
+				resp.setHeader(header.getKey(), s1.toString());
+
 			}
 		}
 	}
@@ -133,5 +138,34 @@ public class HttpUtil {
 			req.setAttribute("OverwriteMap", headers);
 		}
 		return headers;
+	}
+
+	public static String buildAuthHeader(HttpServletRequest req, String value)
+			throws UnsupportedEncodingException {
+		String header_s = value.trim();
+		if (!header_s.startsWith("OAuth "))
+			return value;
+		header_s = header_s.substring(6);
+		String[] params = header_s.split(",");
+		Map<String, String> hs = HttpUtil.getOverwriteParams(req);
+		StringBuilder sb = new StringBuilder("OAuth ");
+		for (String param : params) {
+			param = param.trim();
+			String[] ps = param.split("=");
+			if (ps.length != 2) {
+				return value;
+			}
+			if (ps[0].length() <= 0 || ps[1].length() <= 2) {
+				return value;
+			}
+			if (!hs.containsKey(ps[0])) {
+				sb.append(param).append(',');
+			} else {
+				sb.append(ps[0]).append("=\"")
+						.append(URLEncoder.encode(hs.get(ps[0]), "UTF-8"))
+						.append("\",");
+			}
+		}
+		return sb.toString();
 	}
 }

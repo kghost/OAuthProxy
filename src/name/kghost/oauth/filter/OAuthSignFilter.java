@@ -23,15 +23,14 @@ import name.kghost.oauth.lib.signature.OAuthSignatureMethod;
 import name.kghost.oauth.servlet.HttpUtil;
 
 public class OAuthSignFilter implements Filter {
-	@SuppressWarnings("unchecked")
 	@Override
 	public void doFilter(ServletRequest sreq, ServletResponse sresp,
 			FilterChain chain) throws IOException, ServletException {
 		HttpServletRequest req = (HttpServletRequest) sreq;
 		HttpServletResponse resp = (HttpServletResponse) sresp;
-
-		if (req.getParameter(OAuth.OAUTH_SIGNATURE) != null) {
-			String consumer_key = req.getParameter(OAuth.OAUTH_CONSUMER_KEY);
+		OAuthMessage m = new OAuthMessage(req);
+		if (m.getSignature() != null) {
+			String consumer_key = m.getConsumerKey();
 			if (consumer_key == null) {
 				resp.sendError(401, "Token not found.");
 				return;
@@ -41,10 +40,11 @@ public class OAuthSignFilter implements Filter {
 			OAuthUser u;
 			PersistenceManager pm = PMF.get().getPersistenceManager();
 			try {
-				OAuthConsumer t = pm.getObjectById(OAuthConsumer.class, consumer_key);
+				OAuthConsumer t = pm.getObjectById(OAuthConsumer.class,
+						consumer_key);
 				c = pm.getObjectById(OAuthConsumer.class, t.getReplaceKey());
 
-				String token = req.getParameter(OAuth.OAUTH_TOKEN);
+				String token = m.getToken();
 				if (token != null) {
 					u = pm.getObjectById(OAuthUser.class, token);
 				} else {
@@ -63,8 +63,10 @@ public class OAuthSignFilter implements Filter {
 				Map<String, String> headers = HttpUtil.getOverwriteParams(req);
 				headers.put(OAuth.OAUTH_CONSUMER_KEY, c.getKey());
 				headers.put(OAuth.OAUTH_SIGNATURE_METHOD, c.getMethod());
-				OAuthMessage m = new OAuthMessage(req.getMethod(), url, req
-						.getParameterMap(), headers);
+				m.setUrl(url);
+				for (Map.Entry<String, String> h : headers.entrySet()) {
+					m.addParameter(h.getKey(), h.getValue());
+				}
 				OAuthSignatureMethod o = OAuthSignatureMethod.newSigner(c, u);
 				String sig = o.getSignature(m);
 				headers.put(OAuth.OAUTH_SIGNATURE, sig);

@@ -49,8 +49,7 @@ import name.kghost.oauth.lib.SimpleOAuthValidator;
 public abstract class OAuthSignatureMethod {
 	public String getSignature(OAuthMessage message) throws OAuthException,
 			IOException, URISyntaxException {
-		String baseString = getBaseString(message.URL, message.method, message
-				.getParameters());
+		String baseString = getBaseString(message);
 		Logger.getLogger("OAuth").info("BaseString :" + baseString);
 		String signature = getSignature(baseString);
 		Logger.getLogger("OAuth").info("Signature :" + signature);
@@ -76,8 +75,8 @@ public abstract class OAuthSignatureMethod {
 					"signature_invalid");
 			problem.setParameter("oauth_signature", signature);
 			problem.setParameter("oauth_signature_base_string", baseString);
-			problem.setParameter("oauth_signature_method", message
-					.getSignatureMethod());
+			problem.setParameter("oauth_signature_method",
+					message.getSignatureMethod());
 			throw problem;
 		}
 	}
@@ -119,8 +118,8 @@ public abstract class OAuthSignatureMethod {
 
 	private String getBaseString(OAuthMessage message)
 			throws URISyntaxException, IOException {
-		return getBaseString(message.URL, message.method, message
-				.getParameters());
+		return getBaseString(message.getUrl(), message.method,
+				message.getParameters());
 	}
 
 	protected static String normalizeUrl(String url) throws URISyntaxException {
@@ -230,7 +229,7 @@ public abstract class OAuthSignatureMethod {
 	}
 
 	/** The factory for signature methods. */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	public static OAuthSignatureMethod newMethod(OAuthConsumer consumer)
 			throws OAuthException {
 		try {
@@ -268,7 +267,7 @@ public abstract class OAuthSignatureMethod {
 	 * Subsequently, newMethod(name) will attempt to instantiate the given
 	 * class, with no constructor parameters.
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	public static void registerMethodClass(String name, Class clazz) {
 		if (clazz == null)
 			unregisterMethod(name);
@@ -283,7 +282,7 @@ public abstract class OAuthSignatureMethod {
 		NAME_TO_CLASS.remove(name);
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	private static final Map<String, Class> NAME_TO_CLASS = new ConcurrentHashMap<String, Class>();
 	static {
 		registerMethodClass("HMAC-SHA1", HMAC_SHA1.class);

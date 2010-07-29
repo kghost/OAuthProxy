@@ -21,7 +21,7 @@ public class HttpProxy extends HttpServlet {
 		hashtable.remove("host");
 		hashtable.put("Host", (String) req.getAttribute("host"));
 		GetPost getpost = new GetPost();
-		String s3 = getpost.doGet(url, hashtable, resp);
+		String s3 = getpost.doGet(req, url, hashtable, resp);
 		if (s3 != null) {
 			int i = getpost.getErrorCode();
 			if (i > 0)

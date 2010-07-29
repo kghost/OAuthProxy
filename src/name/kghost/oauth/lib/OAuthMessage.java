@@ -1,79 +1,66 @@
-/*
- * Copyright 2007, 2008 Netflix, Inc.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package name.kghost.oauth.lib;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.Collection;
-import java.util.LinkedList;
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-/**
- * A request or response message used in the OAuth protocol.
- * <p>
- * The parameters in this class are not percent-encoded. Methods like
- * OAuthClient.invoke and OAuthResponseMessage.completeParameters are
- * responsible for percent-encoding parameters before transmission and decoding
- * them after reception.
- * 
- * @author John Kristian
- */
 public class OAuthMessage {
 	@SuppressWarnings("unchecked")
-	public OAuthMessage(HttpServletRequest req) {
-		this(req.getMethod(), req.getRequestURL().toString(), req
-				.getParameterMap(), null);
+	public OAuthMessage(HttpServletRequest req)
+			throws UnsupportedEncodingException {
+		this.method = req.getMethod();
+		this.URL = req.getRequestURL().toString();
+		this.parameters = new HashMap<String, Pair<String, String>>();
+		Map<String, String[]> a = req.getParameterMap();
+		for (Map.Entry<String, String[]> p : a.entrySet()) {
+			String k = p.getKey();
+			String v = p.getValue()[0];
+			addParameter(k, v);
+		}
+
+		String header_s = req.getHeader("Authorization");
+		if (header_s == null)
+			header_s = req.getHeader("WWW-Authenticate");
+		if (header_s != null) {
+			parseHeader(header_s);
+		}
 	}
 
-	public OAuthMessage(String method, String url,
-			Map<String, String[]> parameters, Map<String, String> overwrite) {
-		this.method = method;
-		this.URL = url;
-		this.parameters = new LinkedList<Pair<String, String>>();
-		for (Map.Entry<String, String[]> p : parameters.entrySet()) {
-			String k = p.getKey();
-			String v;
-			if (overwrite != null && overwrite.containsKey(k)) {
-				v = overwrite.get(k);
-			} else {
-				v = p.getValue()[0];
+	private void parseHeader(String header_s)
+			throws UnsupportedEncodingException {
+		header_s = header_s.trim();
+		if (!header_s.startsWith("OAuth "))
+			return;
+		header_s = header_s.substring(6);
+		String[] params = header_s.split(",");
+		HashMap<String, String> map = new HashMap<String, String>();
+		for (String param : params) {
+			param = param.trim();
+			String[] ps = param.split("=");
+			if (ps.length != 2) {
+				return;
 			}
-			if (p.getKey().equals(OAuth.OAUTH_NONCE)) {
-				O_nonce = v;
-			} else if (k.equals(OAuth.OAUTH_SIGNATURE)) {
-				O_signature = v;
-			} else if (k.equals(OAuth.OAUTH_SIGNATURE_METHOD)) {
-				O_method = v;
-			} else if (k.equals(OAuth.OAUTH_TIMESTAMP)) {
-				O_timestamp = v;
-			} else if (k.equals(OAuth.OAUTH_CONSUMER_KEY)) {
-				O_consumer = v;
-			} else if (k.equals(OAuth.OAUTH_TOKEN)) {
-				O_token = v;
-			} else if (k.equals(OAuth.OAUTH_VERSION)) {
-				O_version = v;
+			if (ps[0].length() <= 0 || ps[1].length() <= 2) {
+				return;
 			}
-			this.parameters.add(new Pair<String, String>(k, v));
+			if (ps[1].charAt(0) == '\"'
+					&& ps[1].charAt(ps[1].length() - 1) == '\"') {
+				ps[1] = ps[1].substring(1, ps[1].length() - 1);
+			}
+			map.put(ps[0], URLDecoder.decode(ps[1], "UTF-8"));
+		}
+		for (Map.Entry<String, String> m : map.entrySet()) {
+			this.addParameter(m.getKey(), m.getValue());
 		}
 	}
 
 	public final String method;
-	public final String URL;
-	private final Collection<Pair<String, String>> parameters;
+	private String URL;
+	private final Map<String, Pair<String, String>> parameters;
 	private String O_nonce;
 	private String O_signature;
 	private String O_timestamp;
@@ -88,11 +75,26 @@ public class OAuthMessage {
 	}
 
 	public void addParameter(String key, String value) {
-		parameters.add(new Pair<String, String>(key, value));
+		if (key.equals(OAuth.OAUTH_NONCE)) {
+			O_nonce = value;
+		} else if (key.equals(OAuth.OAUTH_SIGNATURE)) {
+			O_signature = value;
+		} else if (key.equals(OAuth.OAUTH_SIGNATURE_METHOD)) {
+			O_method = value;
+		} else if (key.equals(OAuth.OAUTH_TIMESTAMP)) {
+			O_timestamp = value;
+		} else if (key.equals(OAuth.OAUTH_CONSUMER_KEY)) {
+			O_consumer = value;
+		} else if (key.equals(OAuth.OAUTH_TOKEN)) {
+			O_token = value;
+		} else if (key.equals(OAuth.OAUTH_VERSION)) {
+			O_version = value;
+		}
+		parameters.put(key, new Pair<String, String>(key, value));
 	}
 
 	public Collection<Pair<String, String>> getParameters() {
-		return parameters;
+		return parameters.values();
 	}
 
 	public String getNonce() {
@@ -121,5 +123,13 @@ public class OAuthMessage {
 
 	public String getSignature() {
 		return O_signature;
+	}
+
+	public void setUrl(String url2) {
+		this.URL = url2;
+	}
+
+	public String getUrl() {
+		return this.URL;
 	}
 }

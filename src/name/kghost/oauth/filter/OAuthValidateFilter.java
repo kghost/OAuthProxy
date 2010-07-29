@@ -15,7 +15,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import name.kghost.oauth.config.persistent.OAuthConsumer;
 import name.kghost.oauth.config.persistent.OAuthUser;
-import name.kghost.oauth.lib.OAuth;
 import name.kghost.oauth.lib.OAuthException;
 import name.kghost.oauth.lib.OAuthMessage;
 import name.kghost.oauth.lib.SimpleOAuthValidator;
@@ -26,21 +25,21 @@ public class OAuthValidateFilter implements Filter {
 			FilterChain chain) throws IOException, ServletException {
 		HttpServletRequest req = (HttpServletRequest) sreq;
 		HttpServletResponse resp = (HttpServletResponse) sresp;
+		OAuthMessage m = new OAuthMessage(req);
 
-		if (req.getParameter(OAuth.OAUTH_SIGNATURE) != null) {
-			String consumer = req.getParameter(OAuth.OAUTH_CONSUMER_KEY);
+		if (m.getSignature() != null) {
+			String consumer = m.getConsumerKey();
 			if (consumer == null) {
 				resp.sendError(401, "No Consumer Key");
 				return;
 			}
-			String token = req.getParameter(OAuth.OAUTH_TOKEN);
+			String token = m.getToken();
 			OAuthConsumer c;
 			OAuthUser u;
 			PersistenceManager pm = PMF.get().getPersistenceManager();
 			try {
 				c = pm.getObjectById(OAuthConsumer.class, consumer);
-				if (!c.getMethod().equals(
-						req.getParameter(OAuth.OAUTH_SIGNATURE_METHOD))) {
+				if (!c.getMethod().equals(m.getSignatureMethod())) {
 					resp.sendError(401, "Sign method mismatch");
 					return;
 				}
@@ -57,7 +56,6 @@ public class OAuthValidateFilter implements Filter {
 				pm.close();
 			}
 
-			OAuthMessage m = new OAuthMessage(req);
 			try {
 				new SimpleOAuthValidator().validateMessage(m, c, u);
 			} catch (OAuthException e) {

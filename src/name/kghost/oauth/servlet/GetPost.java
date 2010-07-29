@@ -37,14 +37,18 @@ public class GetPost {
 			conn.setDoInput(true);
 			conn.setUseCaches(false);
 			for (Entry<String, String> header : headers.entrySet()) {
-				conn.setRequestProperty(header.getKey(), header.getValue());
+				String key = header.getKey();
+				if (!key.toLowerCase().equals("authorization")) {
+					conn.setRequestProperty(key, header.getValue());
+				} else {
+					conn.setRequestProperty(key,
+							HttpUtil.buildAuthHeader(req, header.getValue()));
+				}
 			}
 			conn.setRequestProperty("Context-Type",
 					"application/x-www-form-urlencoded");
 			byte[] b2 = postdata.getBytes("UTF-8");
-			conn
-					.setRequestProperty("Content-Length", String
-							.valueOf(b2.length));
+			conn.setRequestProperty("Content-Length", String.valueOf(b2.length));
 			OutputStream output = conn.getOutputStream();
 			output.write(b2);
 			byte[] b = new byte[512];
@@ -58,15 +62,22 @@ public class GetPost {
 		return doResponse(resp, conn);
 	}
 
-	public String doGet(String url, Map<String, String> headers,
-			HttpServletResponse resp) throws IOException {
+	public String doGet(HttpServletRequest req, String url,
+			Map<String, String> headers, HttpServletResponse resp)
+			throws IOException {
 		HttpURLConnection conn = null;
 		try {
 			conn = (HttpURLConnection) new URL(url).openConnection();
 			conn.setDoInput(true);
 			conn.setUseCaches(false);
 			for (Entry<String, String> header : headers.entrySet()) {
-				conn.setRequestProperty(header.getKey(), header.getValue());
+				String key = header.getKey();
+				if (!key.toLowerCase().equals("authorization")) {
+					conn.setRequestProperty(key, header.getValue());
+				} else {
+					conn.setRequestProperty(key,
+							HttpUtil.buildAuthHeader(req, header.getValue()));
+				}
 			}
 		} catch (Exception exception) {
 			return HttpUtil.getMessage(url, exception);
@@ -82,13 +93,13 @@ public class GetPost {
 		String contentType = conn.getContentType();
 		if (contentType != null)
 			resp.setContentType(contentType);
-		String contentEnconding = conn.getContentEncoding();
 		HttpUtil.rewriteResponseHeaders(conn, resp);
-		if (contentEnconding == null)
-			contentEnconding = "";
 		InputStream input = null;
 		OutputStream output = null;
 		try {
+			String contentEnconding = conn.getContentEncoding();
+			if (contentEnconding == null)
+				contentEnconding = "";
 			if (contentEnconding.indexOf("gzip") >= 0)
 				input = new GZIPInputStream(conn.getInputStream());
 			else
