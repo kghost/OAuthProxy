@@ -57,11 +57,11 @@ public class HttpUtil {
 	private static void addQueryParam(StringBuilder sb, String k, String v)
 			throws UnsupportedEncodingException {
 		if (sb.length() == 0) {
-			sb.append("?").append(k).append("=")
-					.append(URLEncoder.encode(v, "UTF-8"));
+			sb.append("?").append(k).append("=").append(
+					URLEncoder.encode(v, "UTF-8"));
 		} else {
-			sb.append("&").append(k).append("=")
-					.append(URLEncoder.encode(v, "UTF-8"));
+			sb.append("&").append(k).append("=").append(
+					URLEncoder.encode(v, "UTF-8"));
 		}
 	}
 
@@ -72,10 +72,10 @@ public class HttpUtil {
 		StringWriter stringwriter = new StringWriter();
 		PrintWriter printwriter = new PrintWriter(stringwriter);
 		exception.printStackTrace(printwriter);
-		return (new StringBuilder()).append("Request: ").append(url)
-				.append("\nException: ").append(s1).append(": ")
-				.append(exception.getMessage()).append("\n")
-				.append(stringwriter.getBuffer().toString()).toString();
+		return (new StringBuilder()).append("Request: ").append(url).append(
+				"\nException: ").append(s1).append(": ").append(
+				exception.getMessage()).append("\n").append(
+				stringwriter.getBuffer().toString()).toString();
 	}
 
 	static void rewriteResponseHeaders(URLConnection conn,
@@ -89,6 +89,15 @@ public class HttpUtil {
 				if (header.getKey().equals("content-encoding")) {
 					continue;
 				}
+				if (header.getKey().equals("set-cookie")) {
+					continue;
+				}
+				if (header.getKey().equals("set-cookie2")) {
+					continue;
+				}
+				if (header.getKey().equals("set-cookie3")) {
+					continue;
+				}
 				StringBuilder s1 = new StringBuilder();
 				for (String v : header.getValue()) {
 					if (s1.length() > 0)
@@ -97,7 +106,6 @@ public class HttpUtil {
 						s1.append(v);
 				}
 				resp.setHeader(header.getKey(), s1.toString());
-
 			}
 		}
 	}
@@ -161,8 +169,8 @@ public class HttpUtil {
 			if (!hs.containsKey(ps[0])) {
 				sb.append(param).append(',');
 			} else {
-				sb.append(ps[0]).append("=\"")
-						.append(URLEncoder.encode(hs.get(ps[0]), "UTF-8"))
+				sb.append(ps[0]).append("=\"").append(
+						URLEncoder.encode(hs.get(ps[0]), "UTF-8"))
 						.append("\",");
 			}
 		}
