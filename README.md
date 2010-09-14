@@ -33,7 +33,7 @@
   <tr>
     <td>Tweetie</td>
     <td>iPhone</td>
-    <td>OK (tested)</td>
+    <td>Not Support*</td>
     <td>Basic</td>
     <td></td>
     <td></td>
@@ -42,33 +42,53 @@
   <tr>
     <td>TwitBird</td>
     <td>iPhone</td>
-    <td>OK (tested)</td>
+    <td>Not Support*</td>
     <td>Basic</td>
     <td></td>
     <td></td>
-    <td>set api proxy to https://your-site.appspot.com</td>
+    <td></td>
   </tr>
   <tr>
     <td>twhirl</td>
     <td>Adobe Air</td>
-    <td>OK (tested)</td>
+    <td>Not Support*</td>
     <td>Basic</td>
     <td></td>
     <td></td>
-    <td>use laconi.ca with username your-twitter-account@yout-site.appspot.com</td>
+    <td></td>
   </tr>
   <tr>
     <td>Gravity</td>
     <td>Symbian</td>
-    <td>OK (tested)</td>
+    <td>Not Support*</td>
     <td>Basic</td>
     <td></td>
     <td></td>
-    <td>use laconi.ca with username your-twitter-account and api url yout-site.appspot.com/1</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>twicca</td>
+    <td>Android</td>
+    <td>OK (modified client)**</td>
+    <td>OAuth</td>
+    <td>7S2l5rQTuFCj4YJpF7xuTQ</td>
+    <td>L9VHCXMKBPb2eWjvRvQTOEmOyGlH4W50getaQJPya4</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>Pure messenger widget</td>
+    <td>Android</td>
+    <td>OK (modified client)**</td>
+    <td>OAuth</td>
+    <td>xCgJn9R7CI1zKcj4jdAAnw</td>
+    <td>i3vrK5fhacyWwmNrSOTzHCmVCnA0BUVCsHdvgAtsess</td>
+    <td></td>
   </tr>
 </table>
 
-and it should work with any client support laconi.ca without change.
+*: Basic auth is disabled by Twitter
+
+**: It is illigal to redistribute the modified client, so ...
 
 ## 1. How to Use an Existing OAuthProxy ##
 
