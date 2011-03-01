@@ -13,7 +13,11 @@ public class OAuthMessage {
 	public OAuthMessage(HttpServletRequest req)
 			throws UnsupportedEncodingException {
 		this.method = req.getMethod();
-		this.URL = req.getRequestURL().toString();
+		scheme = req.getScheme();
+		port = req.getServerPort();
+		server = req.getServerName();
+		uri = req.getRequestURI();
+
 		this.parameters = new HashMap<String, Pair<String, String>>();
 		Map<String, String[]> a = req.getParameterMap();
 		for (Map.Entry<String, String[]> p : a.entrySet()) {
@@ -59,7 +63,10 @@ public class OAuthMessage {
 	}
 
 	public final String method;
-	private String URL;
+	private String scheme;
+	private int port;
+	private String server;
+	private String uri;
 	private final Map<String, Pair<String, String>> parameters;
 	private String O_nonce;
 	private String O_signature;
@@ -71,7 +78,7 @@ public class OAuthMessage {
 
 	@Override
 	public String toString() {
-		return "OAuthMessage(" + URL + ", " + parameters + ")";
+		return "OAuthMessage(" + getUrl() + ", " + parameters + ")";
 	}
 
 	public void addParameter(String key, String value) {
@@ -125,11 +132,34 @@ public class OAuthMessage {
 		return O_signature;
 	}
 
-	public void setUrl(String url2) {
-		this.URL = url2;
+	public void setScheme(String scheme) {
+		this.scheme = scheme;
+	}
+
+	public void setServer(String server) {
+		this.server = server;
+	}
+
+	public void setPort(int port) {
+		this.port = port;
+	}
+
+	public void setUri(String uri) {
+		this.uri = uri;
 	}
 
 	public String getUrl() {
-		return this.URL;
+		StringBuffer url = new StringBuffer();
+		url.append(scheme);
+		url.append("://");
+		url.append(server);
+		if (port > 0
+				&& ((scheme.equalsIgnoreCase("http") && port != 80) || (scheme
+						.equalsIgnoreCase("https") && port != 443))) {
+			url.append(':');
+			url.append(port);
+		}
+		url.append(uri);
+		return url.toString();
 	}
 }

@@ -26,6 +26,12 @@ public class OAuthValidateFilter implements Filter {
 		HttpServletRequest req = (HttpServletRequest) sreq;
 		HttpServletResponse resp = (HttpServletResponse) sresp;
 		OAuthMessage m = new OAuthMessage(req);
+		String fakescheme = req.getHeader("X-OauthProxy-Scheme");
+		String fakeport = req.getHeader("X-OauthProxy-Port");
+		if (fakescheme != null)
+			m.setScheme(fakescheme);
+		if (fakeport != null)
+			m.setPort(Integer.parseInt(fakeport.trim()));
 
 		if (m.getSignature() != null) {
 			String consumer = m.getConsumerKey();

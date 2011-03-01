@@ -14,7 +14,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 		<filter-name>OAuthProxyFilter</filter-name>
 		<filter-class>name.kghost.oauth.filter.OAuthProxyFilter</filter-class>
 		<init-param>
-			<param-name>schema</param-name>
+			<param-name>scheme</param-name>
 			<param-value>https</param-value>
 		</init-param>
 		<init-param>
